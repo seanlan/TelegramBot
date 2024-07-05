@@ -11,21 +11,26 @@ import (
 )
 
 func GetBotList(ctx context.Context, req model.GetBotListReq) (resp model.GetBotListResp, err error) {
-	resp.Total, err = dao.CountAction(ctx, nil)
+	resp.Total, err = dao.CountBots(ctx, nil)
 	if err != nil {
 		return
 	}
-	err = dao.FetchAllAction(ctx, &resp.Bots, nil, req.Page, req.Size)
+	err = dao.FetchAllBots(ctx, &resp.Bots, nil, req.Page, req.Size)
 	return
 }
 
 func SaveBot(ctx context.Context, req model.SaveBotReq) (resp model.SaveBotResp, err error) {
+	var botQ = sqlmodel.BotsColumns
 	bot := sqlmodel.Bots{
 		ID:     req.ID,
 		Name:   req.Name,
 		Token:  req.Token,
 		Enable: req.Enable,
 	}
-	err = dao.SaveBots(ctx, &bot)
+	_, err = dao.UpsertBots(ctx, &bot, dao.M{
+		botQ.Name.FieldName:   req.Name,
+		botQ.Token.FieldName:  req.Token,
+		botQ.Enable.FieldName: req.Enable,
+	}, botQ.ID.FieldName)
 	return
 }

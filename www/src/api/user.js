@@ -22,27 +22,3 @@ export function rePassword(data) {
     data
   })
 }
-
-export function getInfo(token) {
-  return request({
-    url: '/api/v1/user/info',
-    method: 'post',
-    data: { token }
-  })
-}
-
-export function userList(data) {
-  return request({
-    url: '/api/v1/user/list',
-    method: 'post',
-    data
-  })
-}
-
-export function userAssets(data) {
-  return request({
-    url: '/api/v1/user/assets',
-    method: 'post',
-    data
-  })
-}

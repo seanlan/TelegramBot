@@ -6,6 +6,7 @@ package service
 import (
 	"TelegramBot/internal/dao"
 	"TelegramBot/internal/dao/sqlmodel"
+	"TelegramBot/internal/handler"
 	"TelegramBot/internal/model"
 	"context"
 )
@@ -20,12 +21,22 @@ func GetConfigList(ctx context.Context, req model.GetConfigListReq) (resp model.
 }
 
 func SaveConfig(ctx context.Context, req model.SaveConfigReq) (resp model.SaveConfigResp, err error) {
+	var configQ = sqlmodel.ConfigColumns
 	conf := sqlmodel.Config{
-		ID:      req.UserID,
+		ID:      req.ID,
 		Key:     req.Key,
 		Value:   req.Value,
 		Comment: req.Comment,
 	}
-	err = dao.SaveConfig(ctx, &conf)
+	_, err = dao.UpsertConfig(ctx, &conf, dao.M{
+		configQ.Key.FieldName:     req.Key,
+		configQ.Value.FieldName:   req.Value,
+		configQ.Comment.FieldName: req.Comment,
+	}, configQ.ID.FieldName)
+	return
+}
+
+func RefreshConfig(ctx context.Context, req model.RefreshConfigReq) (resp model.RefreshConfigResp, err error) {
+	handler.ClearConfigCache(ctx)
 	return
 }

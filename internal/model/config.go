@@ -18,11 +18,18 @@ type GetConfigListResp struct {
 
 type SaveConfigReq struct {
 	BaseReq
-	ID      int    `json:"id" form:"id"`
+	ID      int64  `json:"id" form:"id"`
 	Key     string `json:"key" form:"key" binding:"required"`
 	Value   string `json:"value" form:"value"`
 	Comment string `json:"comment" form:"comment"`
 }
 
 type SaveConfigResp struct {
+}
+
+type RefreshConfigReq struct {
+    BaseReq
+}
+
+type RefreshConfigResp struct {
 }

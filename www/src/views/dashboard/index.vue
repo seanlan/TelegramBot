@@ -1,172 +1,93 @@
 <template>
   <el-container>
     <el-main>
-      <el-header class="pagetab">
-        <h4 class="links">数据概览</h4>
-      </el-header>
-      <el-row>
-        <el-col :span="6">
-          <div class="card-panel">
-            <div class="card-panel-content">
-              <h1>{{ today.register }}</h1>
-              <span>新增用户</span>
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="card-panel">
-            <div class="card-panel-content">
-              <h1>{{ today.online }}</h1>
-              <span>活跃用户</span>
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="card-panel">
-            <div class="card-panel-content">
-              <h1>{{ today.retained_day_1 }} / {{ today.retained_rate_1 | percent }}%</h1>
-              <span>次留</span>
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="card-panel">
-            <div class="card-panel-content">
-              <h1>{{ today.invite }} / {{ today.inviter }}</h1>
-              <span>邀请</span>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
       <el-divider />
       <el-header class="pagetab">
-        <h4>每日统计</h4>
+        <h4>机器人管理</h4>
       </el-header>
       <el-table
-        v-loading="stats.loading"
-        :data="stats.list"
+        v-loading="bots.loading"
+        :data="bots.list"
       >
         <el-table-column
-          prop="date_stamp"
-          label="日期"
+          prop="id"
+          label="ID"
           width="100"
         />
         <el-table-column
-          prop="register"
-          label="注册"
+          prop="name"
+          label="Name"
           align="center"
         />
         <el-table-column
-          prop="online"
-          label="活跃"
+          prop="token"
+          label="Token"
           align="center"
         />
         <el-table-column
           prop="retained_day_1"
-          label="次留"
+          label="是否开启"
           align="center"
         >
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.retained_day_1 > 0">
-              {{ scope.row.retained_day_1 }} ({{ scope.row.retained_rate_1 | percent }}%)
-            </el-tag>
-            <span v-else> - </span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="retained_day_1"
-          label="3日留存"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <el-tag v-if="scope.row.retained_day_3 > 0">
-              {{ scope.row.retained_day_3 }} ({{ scope.row.retained_rate_3 | percent }}%)
-            </el-tag>
-            <span v-else> - </span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="retained_day_7"
-          label="7日留存"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <el-tag v-if="scope.row.retained_day_7 > 0">
-              {{ scope.row.retained_day_7 }} ({{ scope.row.retained_rate_7 | percent }}%)
-            </el-tag>
-            <span v-else> - </span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="invite"
-          label="邀请人数/邀请人"
-          align="center"
-          width="200"
-        >
-          <template slot-scope="scope">
-            {{ scope.row.invite }} / {{ scope.row.inviter }}
+            <el-switch
+              v-model="scope.row.enable"
+              :active-value="1"
+              :inactive-value="0"
+            />
           </template>
         </el-table-column>
       </el-table>
       <el-pagination
         background
         layout="prev, pager, next, jumper, ->, total"
-        :page-size="stats.pagesize"
-        :total="stats.totalnum"
-        @current-change="statsPageChange"
+        :page-size="bots.size"
+        :total="bots.totalnum"
+        @current-change="currentPageChange"
       />
     </el-main>
   </el-container>
 </template>
 
 <script>
-import { statsList, statsToday } from '@/api/stats'
+import { getBotList } from '@/api/bot'
 export default {
   components: {
   },
   data() {
     return {
-      today: {
-        register: 0,
-        online: 0,
-        retained_day_1: 0,
-        retained_rate_1: 0,
-        invite: 0,
-        inviter: 0
-      },
-      stats: {
+      bots: {
         list: [],
-        pagesize: 20,
+        page: 1,
+        size: 20,
         totalnum: 0,
         loading: false
       }
     }
   },
   mounted() {
-    this.getStatsToday()
-    this.getStatsList()
+    this.loadBotList()
   },
   methods: {
-    async getStatsToday(pagenum = 1) {
-      const res = await statsToday()
-      this.today = res.record
+    handleSizeChange(val) {
+      this.size = val
+      this.page = 1
+      this.loadData()
     },
-    async getStatsList(pagenum = 1) {
-      this.stats.loading = true
-      const res = await statsList({
-        page: pagenum,
-        size: this.stats.pagesize
-      })
-      this.stats.list = res.list.map(item => {
-        item.assets = []
-        return item
-      })
-      console.log(res.list)
-      this.stats.totalnum = res.total
-      this.stats.loading = false
+    currentPageChange(e) {
+      this.page = e
+      this.loadData()
     },
-    statsPageChange(e) {
-      this.getStatsList(e)
+    async loadBotList() {
+      this.bots.loading = true
+      const data = await getBotList({
+        page: this.bots.page,
+        size: this.bots.size
+      })
+      console.log(data)
+      this.bots.loading = false
+      this.bots.list = data.bots
+      this.bots.totalnum = data.total
     }
   }
 }

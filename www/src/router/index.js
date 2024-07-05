@@ -76,7 +76,7 @@ export const constantRoutes = [{ // 固定路由
     component: () => import('@/views/dashboard/index'),
     name: 'Dashboard',
     meta: {
-      title: '主页',
+      title: '机器人管理',
       icon: 'dashboard',
       affix: true
     }
@@ -90,100 +90,20 @@ export const constantRoutes = [{ // 固定路由
  */
 export const asyncRoutes = [
   {
-    path: '/user',
+    path: '/config',
     component: Layout,
-    redirect: '/user/list',
-    name: '用户管理',
-    meta: { title: '用户管理', icon: 'el-icon-user-solid' },
-    alwaysShow: true,
-    children: [
-      {
-        path: 'list',
-        name: 'user-list',
-        component: () => import('@/views/users/list'),
-        meta: { title: '用户管理', icon: 'el-icon-user-solid', role: [] }
+    redirect: '/config',
+    children: [{
+      path: '',
+      component: () => import('@/views/config/index'),
+      name: 'Dashboard',
+      meta: {
+        title: '配置管理',
+        icon: 'dashboard',
+        affix: true
       }
-    ]
+    }]
   },
-  // {
-  //   path: '/recharge',
-  //   component: Layout,
-  //   redirect: '/recharge/list',
-  //   name: '充值记录',
-  //   meta: { title: '充值记录', icon: 'el-icon-money' },
-  //   alwaysShow: true,
-  //   children: [
-  //     {
-  //       path: 'list',
-  //       name: 'recharge-list',
-  //       component: () => import('@/views/recharge/recharge'),
-  //       meta: { title: '充值记录', icon: 'el-icon-money', role: [] }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/withdraw',
-  //   component: Layout,
-  //   redirect: '/withdraw/list',
-  //   name: '提现管理',
-  //   meta: { title: '提现管理', icon: 'el-icon-s-finance' },
-  //   alwaysShow: true,
-  //   children: [
-  //     {
-  //       path: 'list',
-  //       name: 'withdraw-list',
-  //       component: () => import('@/views/withdraw/list'),
-  //       meta: { title: '提现记录', icon: 'el-icon-s-finance', role: [] }
-  //     }
-  //   ]
-  // },
-  {
-    path: '/tools',
-    component: Layout,
-    redirect: '/tools/message',
-    name: '运营工具',
-    meta: { title: '运营工具', icon: 'el-icon-star-on' },
-    alwaysShow: true,
-    children: [
-      // {
-      //   path: 'announcement',
-      //   name: 'announcement',
-      //   component: () => import('@/views/tools/announcement'),
-      //   meta: { title: '公告发布', icon: 'el-icon-s-comment', role: [] }
-      // },
-      {
-        path: 'message',
-        name: 'message',
-        component: () => import('@/views/tools/message'),
-        meta: { title: '消息推送', icon: 'el-icon-s-promotion', role: [] }
-      },
-      // {
-      //   path: 'redeem',
-      //   name: 'redeem',
-      //   component: () => import('@/views/tools/redeem'),
-      //   meta: { title: '兑换码', icon: 'el-icon-s-ticket', role: [] }
-      // },
-      // {
-      //   path: 'redpacket',
-      //   name: 'redpacket',
-      //   component: () => import('@/views/tools/redpacket'),
-      //   meta: { title: '红包管理', icon: 'el-icon-s-claim', role: [] }
-      // },
-      {
-        path: 'task',
-        name: 'task',
-        component: () => import('@/views/tools/task'),
-        meta: { title: '任务管理', icon: 'el-icon-s-flag', role: [] }
-      },
-      {
-        path: 'channel',
-        name: 'channel',
-        component: () => import('@/views/tools/channel_message'),
-        meta: { title: '频道消息', icon: 'el-icon-s-comment', role: [] }
-      }
-    ]
-  },
-
   // 404 page must be placed at the end !!!
   {
     path: '*',

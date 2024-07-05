@@ -20,6 +20,7 @@ func GetActionList(ctx context.Context, req model.GetActionListReq) (resp model.
 }
 
 func SaveAction(ctx context.Context, req model.SaveActionReq) (resp model.SaveActionResp, err error) {
+	var actionQ = sqlmodel.ActionColumns
 	action := sqlmodel.Action{
 		ID:        req.ID,
 		BotName:   req.BotName,
@@ -28,6 +29,12 @@ func SaveAction(ctx context.Context, req model.SaveActionReq) (resp model.SaveAc
 		Content:   req.Content,
 		Extension: req.Extension,
 	}
-	err = dao.SaveAction(ctx, &action)
+	_, err = dao.UpsertAction(ctx, &action, dao.M{
+		actionQ.BotName.FieldName:   req.BotName,
+		actionQ.Command.FieldName:   req.Command,
+		actionQ.Image.FieldName:     req.Image,
+		actionQ.Content.FieldName:   req.Content,
+		actionQ.Extension.FieldName: req.Extension,
+	}, actionQ.ID.FieldName)
 	return
 }

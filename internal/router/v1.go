@@ -33,15 +33,24 @@ func initWebRouter(r *gin.Engine) {
 	botGroup := apiGroup.Group("bot")
 	{
 		// 机器人列表
-		botGroup.GET("list", v1.GetBotList)
+		botGroup.POST("list", v1.GetBotList)
 		// 保存机器人信息
 		botGroup.POST("save", v1.SaveBot)
 	}
 	actionGroup := apiGroup.Group("action")
 	{
 		// action列表
-		actionGroup.GET("list", v1.GetActionList)
+		actionGroup.POST("list", v1.GetActionList)
 		// 保存action
 		actionGroup.POST("save", v1.SaveAction)
+	}
+	configGroup := apiGroup.Group("config")
+	{
+		// config列表
+		configGroup.POST("list", v1.GetConfigList)
+		// 保存config
+		configGroup.POST("save", v1.SaveConfig)
+		// 刷新config
+		configGroup.POST("refresh", v1.RefreshConfig)
 	}
 }
