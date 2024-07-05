@@ -1,0 +1,16 @@
+debug: true
+app: telegram-bot
+#gin配置
+web:
+    host: ":8080"
+    secret: "k3308"
+#db配置
+db:
+    uri: mysql://root:q145145145@tcp(127.0.0.1:3306)/telegram-bot?parseTime=true&loc=Local&charset=utf8mb4&collation=utf8mb4_unicode_ci
+#redis配置
+redis:
+    hosts: "127.0.0.1:6379"
+    prefix: "pepe-bot"
+    username: ""
+    password: ""
+    db: 0
