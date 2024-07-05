@@ -28,28 +28,28 @@ package sqlmodel
 const TableNameAction = "action"
 
 var ActionColumns = struct {
-	ID         FieldBase
-	BotName    FieldBase
-	Command    FieldBase
-	Image      FieldBase
-	Content    FieldBase
-	Extentions FieldBase
+	ID        FieldBase
+	BotName   FieldBase
+	Command   FieldBase
+	Image     FieldBase
+	Content   FieldBase
+	Extension FieldBase
 }{
-	ID:         FieldBase{"id", "id"},
-	BotName:    FieldBase{"bot_name", "bot_name"},
-	Command:    FieldBase{"command", "command"},
-	Image:      FieldBase{"image", "image"},
-	Content:    FieldBase{"content", "content"},
-	Extentions: FieldBase{"extentions", "extentions"},
+	ID:        FieldBase{"id", "id"},
+	BotName:   FieldBase{"bot_name", "bot_name"},
+	Command:   FieldBase{"command", "command"},
+	Image:     FieldBase{"image", "image"},
+	Content:   FieldBase{"content", "content"},
+	Extension: FieldBase{"extension", "extension"},
 }
 
 type Action struct {
-	ID         int64  `json:"id" gorm:"column:id;type:bigint;primaryKey;autoIncrement"` //
-	BotName    string `json:"bot_name" gorm:"column:bot_name;type:varchar;not null"`    //机器人名称
-	Command    string `json:"command" gorm:"column:command;type:varchar;not null"`      //命令
-	Image      string `json:"image" gorm:"column:image;type:varchar;not null"`          //图片
-	Content    string `json:"content" gorm:"column:content;type:text;not null"`         //文本
-	Extentions string `json:"extentions" gorm:"column:extentions;type:text;not null"`   //扩展选项
+	ID        int64  `json:"id" gorm:"column:id;type:bigint;primaryKey;autoIncrement"` //
+	BotName   string `json:"bot_name" gorm:"column:bot_name;type:varchar;not null"`    //机器人名称
+	Command   string `json:"command" gorm:"column:command;type:varchar;not null"`      //命令
+	Image     string `json:"image" gorm:"column:image;type:varchar;not null"`          //图片
+	Content   string `json:"content" gorm:"column:content;type:text;not null"`         //文本
+	Extension string `json:"extension" gorm:"column:extension;type:text;not null"`     //扩展选项
 }
 
 // TableName Action's table name

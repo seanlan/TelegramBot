@@ -3,6 +3,8 @@
 
 package model
 
+import "TelegramBot/internal/dao/sqlmodel"
+
 type GetActionListReq struct {
 	BaseReq
 	Page int `json:"page" form:"page"`
@@ -10,7 +12,8 @@ type GetActionListReq struct {
 }
 
 type GetActionListResp struct {
-	Total int64 `json:"total"`
+	Total   int64             `json:"total"`
+	Actions []sqlmodel.Action `json:"actions"`
 }
 
 type SaveActionReq struct {
