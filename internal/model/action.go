@@ -18,6 +18,12 @@ type GetActionListResp struct {
 
 type SaveActionReq struct {
 	BaseReq
+	ID        int64  `json:"id" form:"id"`
+	BotName   string `json:"bot_name" form:"bot_name"`
+	Command   string `json:"command" form:"command"`
+	Image     string `json:"image" form:"image"`
+	Content   string `json:"content" form:"content"`
+	Extension string `json:"extension" form:"extension"`
 }
 
 type SaveActionResp struct {

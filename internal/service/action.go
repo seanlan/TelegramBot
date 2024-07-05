@@ -4,14 +4,30 @@
 package service
 
 import (
+	"TelegramBot/internal/dao"
+	"TelegramBot/internal/dao/sqlmodel"
 	"TelegramBot/internal/model"
 	"context"
 )
 
 func GetActionList(ctx context.Context, req model.GetActionListReq) (resp model.GetActionListResp, err error) {
+	resp.Total, err = dao.CountAction(ctx, nil)
+	if err != nil {
+		return
+	}
+	err = dao.FetchAllAction(ctx, &resp.Actions, nil, req.Page, req.Size)
 	return
 }
 
 func SaveAction(ctx context.Context, req model.SaveActionReq) (resp model.SaveActionResp, err error) {
+	action := sqlmodel.Action{
+		ID:        req.ID,
+		BotName:   req.BotName,
+		Command:   req.Command,
+		Image:     req.Image,
+		Content:   req.Content,
+		Extension: req.Extension,
+	}
+	err = dao.SaveAction(ctx, &action)
 	return
 }

@@ -30,4 +30,18 @@ func initWebRouter(r *gin.Engine) {
 	}
 	apiGroup.Use(xlhttp.JWTHeadMiddleware(xlhttp.NewJWT(config.C.Web.Secret, time.Second*3600)))
 	apiGroup.POST("/login/change_password", v1.ChangePassword) // 修改密码
+	botGroup := apiGroup.Group("bot")
+	{
+		// 机器人列表
+		botGroup.GET("list", v1.GetBotList)
+		// 保存机器人信息
+		botGroup.POST("save", v1.SaveBot)
+	}
+	actionGroup := apiGroup.Group("action")
+	{
+		// action列表
+		actionGroup.GET("list", v1.GetActionList)
+		// 保存action
+		actionGroup.POST("save", v1.SaveAction)
+	}
 }
