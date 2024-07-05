@@ -19,14 +19,14 @@ func initWebRouter(r *gin.Engine) {
 	apiGroup := r.Group("api/v1")
 	// 监控监测
 	apiGroup.GET("health", v1.CheckHealth)
-	loginGroup := apiGroup.Group("login")
-	{
-		loginGroup.POST("login", v1.AdminLogin)
-	}
 	// web hook
 	hookGroup := apiGroup.Group("hook")
 	{
 		hookGroup.POST("telegram-bot/:name", v1.TelegramBotWebHook)
+	}
+	loginGroup := apiGroup.Group("login")
+	{
+		loginGroup.POST("login", v1.AdminLogin)
 	}
 	apiGroup.Use(xlhttp.JWTHeadMiddleware(xlhttp.NewJWT(config.C.Web.Secret, time.Second*3600)))
 	apiGroup.POST("/login/change_password", v1.ChangePassword) // 修改密码

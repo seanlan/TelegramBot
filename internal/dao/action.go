@@ -11,8 +11,8 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func CountActions(ctx context.Context, expr clause.Expression) (totalRows int64, err error) {
-	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Actions{})
+func CountAction(ctx context.Context, expr clause.Expression) (totalRows int64, err error) {
+	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Action{})
 	if expr != nil {
 		db = db.Where(expr)
 	}
@@ -20,11 +20,11 @@ func CountActions(ctx context.Context, expr clause.Expression) (totalRows int64,
 	return totalRows, db.Error
 }
 
-func SumActions(ctx context.Context, sumField sqlmodel.FieldBase, expr clause.Expression) (sum float64, err error) {
+func SumAction(ctx context.Context, sumField sqlmodel.FieldBase, expr clause.Expression) (sum float64, err error) {
 	var sumValue = struct {
 		N float64 `json:"n"`
 	}{}
-	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Actions{})
+	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Action{})
 	if expr != nil {
 		db = db.Where(expr)
 	}
@@ -32,8 +32,8 @@ func SumActions(ctx context.Context, sumField sqlmodel.FieldBase, expr clause.Ex
 	return sumValue.N, err
 }
 
-func FetchAllActions(ctx context.Context, records interface{}, expr clause.Expression, page, size int, orders ...string) (err error) {
-	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Actions{})
+func FetchAllAction(ctx context.Context, records interface{}, expr clause.Expression, page, size int, orders ...string) (err error) {
+	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Action{})
 	if expr != nil {
 		db = db.Where(expr)
 	}
@@ -54,8 +54,8 @@ func FetchAllActions(ctx context.Context, records interface{}, expr clause.Expre
 	return err
 }
 
-func FetchActions(ctx context.Context, record interface{}, expr clause.Expression, orders ...string) (err error) {
-	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Actions{})
+func FetchAction(ctx context.Context, record interface{}, expr clause.Expression, orders ...string) (err error) {
+	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Action{})
 	if expr != nil {
 		db = db.Where(expr)
 	}
@@ -70,31 +70,31 @@ func FetchActions(ctx context.Context, record interface{}, expr clause.Expressio
 	return err
 }
 
-func SaveActions(ctx context.Context, d *sqlmodel.Actions) (err error) {
-	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Actions{}).Save(d)
+func SaveAction(ctx context.Context, d *sqlmodel.Action) (err error) {
+	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Action{}).Save(d)
 	if err = db.Error; err != nil {
 		return ErrInsertFailed
 	}
 	return nil
 }
 
-func AddActions(ctx context.Context, d *sqlmodel.Actions) (RowsAffected int64, err error) {
-	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Actions{}).Create(d)
+func AddAction(ctx context.Context, d *sqlmodel.Action) (RowsAffected int64, err error) {
+	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Action{}).Create(d)
 	if err = db.Error; err != nil {
 		return -1, ErrInsertFailed
 	}
 	return db.RowsAffected, nil
 }
 
-func AddsActions(ctx context.Context, d *[]sqlmodel.Actions) (RowsAffected int64, err error) {
-	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Actions{}).Create(d)
+func AddsAction(ctx context.Context, d *[]sqlmodel.Action) (RowsAffected int64, err error) {
+	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Action{}).Create(d)
 	if err = db.Error; err != nil {
 		return -1, ErrInsertFailed
 	}
 	return db.RowsAffected, nil
 }
 
-func UpdateActions(ctx context.Context, updated *sqlmodel.Actions) (RowsAffected int64, err error) {
+func UpdateAction(ctx context.Context, updated *sqlmodel.Action) (RowsAffected int64, err error) {
 	if updated.ID == 0 {
 		return -1, ErrUpdateFailed
 	}
@@ -105,8 +105,8 @@ func UpdateActions(ctx context.Context, updated *sqlmodel.Actions) (RowsAffected
 	return db.RowsAffected, nil
 }
 
-func UpdatesActions(ctx context.Context, expr clause.Expression, updated map[string]interface{}) (RowsAffected int64, err error) {
-	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Actions{})
+func UpdatesAction(ctx context.Context, expr clause.Expression, updated map[string]interface{}) (RowsAffected int64, err error) {
+	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Action{})
 	if expr != nil {
 		db = db.Where(expr)
 	}
@@ -117,12 +117,12 @@ func UpdatesActions(ctx context.Context, expr clause.Expression, updated map[str
 	return db.RowsAffected, nil
 }
 
-func UpsertActions(ctx context.Context, d *sqlmodel.Actions, upsert map[string]interface{}, columns ...string) (RowsAffected int64, err error) {
+func UpsertAction(ctx context.Context, d *sqlmodel.Action, upsert map[string]interface{}, columns ...string) (RowsAffected int64, err error) {
 	var cols []clause.Column
 	for _, col := range columns {
 		cols = append(cols, clause.Column{Name: col})
 	}
-	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Actions{}).Clauses(clause.OnConflict{
+	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Action{}).Clauses(clause.OnConflict{
 		DoUpdates: clause.Assignments(upsert),
 		Columns:   cols,
 	}).Create(d)
@@ -132,12 +132,12 @@ func UpsertActions(ctx context.Context, d *sqlmodel.Actions, upsert map[string]i
 	return db.RowsAffected, nil
 }
 
-func DeleteActions(ctx context.Context, expr clause.Expression) (rowsAffected int64, err error) {
-	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Actions{})
+func DeleteAction(ctx context.Context, expr clause.Expression) (rowsAffected int64, err error) {
+	db := GetDB(ctx).WithContext(ctx).Model(&sqlmodel.Action{})
 	if expr != nil {
 		db = db.Where(expr)
 	}
-	db = db.Delete(sqlmodel.Actions{})
+	db = db.Delete(sqlmodel.Action{})
 	if err = db.Error; err != nil {
 		return -1, err
 	}

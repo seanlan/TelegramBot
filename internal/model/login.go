@@ -5,13 +5,17 @@ package model
 
 type AdminLoginReq struct {
 	BaseReq
+	Username string `json:"username" form:"username" binding:"required"`
+	Password string `json:"password" form:"password" binding:"required"`
 }
 
 type AdminLoginResp struct {
+	Token string `json:"token"`
 }
 
 type ChangePasswordReq struct {
 	BaseReq
+	NewPassword string `json:"new_password" form:"new_password" binding:"required"`
 }
 
 type ChangePasswordResp struct {

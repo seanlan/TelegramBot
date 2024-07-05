@@ -22,14 +22,14 @@ var (
 //	@param name
 //	@return actions
 //	@return err
-func GetBotActions(ctx context.Context, name string) (actions []sqlmodel.Actions, err error) {
+func GetBotActions(ctx context.Context, name string) (actions []sqlmodel.Action, err error) {
 	actionKey := BotActionsKey + name
 	actionCache := dao.Redis.Get(ctx, actionKey).Val()
 	if actionCache == "" {
 		var (
-			actionQ = sqlmodel.ActionsColumns
+			actionQ = sqlmodel.ActionColumns
 		)
-		err = dao.FetchAllActions(ctx, &actions, actionQ.BotName.Eq(name), 0, 0)
+		err = dao.FetchAllAction(ctx, &actions, actionQ.BotName.Eq(name), 0, 0)
 		if err != nil {
 			return
 		}

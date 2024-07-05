@@ -4,13 +4,54 @@
 package service
 
 import (
+	"TelegramBot/config"
+	"TelegramBot/internal/constant"
+	"TelegramBot/internal/dao"
+	"TelegramBot/internal/dao/sqlmodel"
+	"TelegramBot/internal/e"
 	"TelegramBot/internal/model"
+	"TelegramBot/pkg/xlhttp"
 	"context"
+	"golang.org/x/crypto/bcrypt"
+	"strconv"
+	"time"
 )
 
 func AdminLogin(ctx context.Context, req model.AdminLoginReq) (resp model.AdminLoginResp, err error) {
+	var (
+		admin  sqlmodel.AdminUser
+		adminQ = sqlmodel.AdminUserColumns
+	)
+	err = dao.FetchAdminUser(ctx, &admin, adminQ.Username.Eq(req.Username))
+	if err != nil {
+		err = e.ErrorUsernameOrPassword
+		return
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(req.Password))
+	if err != nil {
+		err = e.ErrorUsernameOrPassword
+		return
+	}
+	jwt := xlhttp.NewJWT(config.C.Web.Secret, time.Second*constant.UserAccessTokenExpires)
+	resp.Token, err = jwt.CreateToken(strconv.FormatInt(admin.ID, 10))
 	return
 }
+
 func ChangePassword(ctx context.Context, req model.ChangePasswordReq) (resp model.ChangePasswordResp, err error) {
+	var (
+		adminUserQ = sqlmodel.AdminUserColumns
+		adminUser  sqlmodel.AdminUser
+	)
+	// 校验账户是否存在
+	err = dao.FetchAdminUser(ctx, &adminUser, dao.And(adminUserQ.ID.Eq(req.UserID)))
+	if err != nil {
+		return
+	}
+	hashedPwd, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return
+	}
+	adminUser.Password = string(hashedPwd)
+	_, _ = dao.UpdateAdminUser(ctx, &adminUser)
 	return
 }

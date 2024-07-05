@@ -11,23 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AdminLogin(c *gin.Context) {
-	var (
-		err error
-	)
-	r := xlhttp.Build(c)
-	var req model.AdminLoginReq
-	err = r.RequestParser(&req)
-	if err != nil {
-		return
-	}
-	req.ClientIP = c.ClientIP()
-	resp, err := service.AdminLogin(c, req)
-	r.JsonReturn(err, resp)
-	return
-}
-
-func ChangePassword(c *gin.Context) {
+func GetActionList(c *gin.Context) {
 	var (
 		err    error
 		userID int64
@@ -38,14 +22,36 @@ func ChangePassword(c *gin.Context) {
 		r.JsonReturn(e.ErrorToken)
 		return
 	}
-	var req model.ChangePasswordReq
+	var req model.GetActionListReq
 	err = r.RequestParser(&req)
 	if err != nil {
 		return
 	}
 	req.UserID = userID
 	req.ClientIP = c.ClientIP()
-	resp, err := service.ChangePassword(c, req)
+	resp, err := service.GetActionList(c, req)
+	r.JsonReturn(err, resp)
+	return
+}
+func SaveAction(c *gin.Context) {
+	var (
+		err    error
+		userID int64
+	)
+	r := xlhttp.Build(c)
+	userID, err = r.GetJWTUID()
+	if userID == 0 || err != nil {
+		r.JsonReturn(e.ErrorToken)
+		return
+	}
+	var req model.SaveActionReq
+	err = r.RequestParser(&req)
+	if err != nil {
+		return
+	}
+	req.UserID = userID
+	req.ClientIP = c.ClientIP()
+	resp, err := service.SaveAction(c, req)
 	r.JsonReturn(err, resp)
 	return
 }

@@ -25,9 +25,9 @@ type Member struct {
 
 package sqlmodel
 
-const TableNameActions = "actions"
+const TableNameAction = "action"
 
-var ActionsColumns = struct {
+var ActionColumns = struct {
 	ID         FieldBase
 	BotName    FieldBase
 	Command    FieldBase
@@ -43,7 +43,7 @@ var ActionsColumns = struct {
 	Extentions: FieldBase{"extentions", "extentions"},
 }
 
-type Actions struct {
+type Action struct {
 	ID         int64  `json:"id" gorm:"column:id;type:bigint;primaryKey;autoIncrement"` //
 	BotName    string `json:"bot_name" gorm:"column:bot_name;type:varchar;not null"`    //机器人名称
 	Command    string `json:"command" gorm:"column:command;type:varchar;not null"`      //命令
@@ -52,7 +52,7 @@ type Actions struct {
 	Extentions string `json:"extentions" gorm:"column:extentions;type:text;not null"`   //扩展选项
 }
 
-// TableName Actions's table name
-func (*Actions) TableName() string {
-	return TableNameActions
+// TableName Action's table name
+func (*Action) TableName() string {
+	return TableNameAction
 }
