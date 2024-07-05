@@ -104,8 +104,8 @@ func BotProcessUpdate(ctx context.Context, name string, b *tele.Bot, u *tele.Upd
 			rows     = make([]tele.Row, 0)
 			selector = &tele.ReplyMarkup{}
 		)
-		if action.Extensions != "" {
-			_ = json.Unmarshal([]byte(action.Extensions), &ext)
+		if action.Extension != "" {
+			_ = json.Unmarshal([]byte(action.Extension), &ext)
 			for _, e := range ext {
 				rows = append(rows, selector.Row(selector.URL(e.Text, e.Url)))
 			}
