@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"TelegramBot/internal/constant"
 	"TelegramBot/internal/dao"
 	"TelegramBot/internal/dao/sqlmodel"
 	"context"
@@ -8,10 +9,7 @@ import (
 	"time"
 )
 
-const (
-	ConfigCacheKey     = "config"
-	TelegramBotHookKey = "telegram-bot-webhook"
-)
+const ()
 
 // GetConfig
 //
@@ -20,7 +18,7 @@ const (
 //	@return m
 //	@return err
 func GetConfig(ctx context.Context) (m map[string]string, err error) {
-	configCache := dao.Redis.Get(ctx, ConfigCacheKey).Val()
+	configCache := dao.Redis.Get(ctx, constant.ConfigCacheKey).Val()
 	if configCache == "" {
 		var records []sqlmodel.Config
 		err = dao.FetchAllConfig(ctx, &records, nil, 0, 0)
@@ -30,7 +28,7 @@ func GetConfig(ctx context.Context) (m map[string]string, err error) {
 		}
 		var configBytes []byte
 		configBytes, err = json.Marshal(m)
-		dao.Redis.Set(ctx, ConfigCacheKey, string(configBytes), time.Hour*1)
+		dao.Redis.Set(ctx, constant.ConfigCacheKey, string(configBytes), time.Hour*1)
 	} else {
 		err = json.Unmarshal([]byte(configCache), &m)
 	}
@@ -58,5 +56,5 @@ func GetConfigByKey(ctx context.Context, key string) (value string, err error) {
 //	@Description: 清除配置缓存
 //	@param ctx
 func ClearConfigCache(ctx context.Context) {
-	dao.Redis.Del(ctx, ConfigCacheKey)
+	dao.Redis.Del(ctx, constant.ConfigCacheKey)
 }

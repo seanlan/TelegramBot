@@ -32,6 +32,8 @@ func initWebRouter(r *gin.Engine) {
 	apiGroup.POST("/login/change_password", v1.ChangePassword) // 修改密码
 	botGroup := apiGroup.Group("bot")
 	{
+		// 所有机器人
+		botGroup.POST("all", v1.GetAllBots)
 		// 机器人列表
 		botGroup.POST("list", v1.GetBotList)
 		// 保存机器人信息

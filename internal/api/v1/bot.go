@@ -55,3 +55,26 @@ func SaveBot(c *gin.Context) {
 	r.JsonReturn(err, resp)
 	return
 }
+
+func GetAllBots(c *gin.Context) {
+	var (
+        err    error
+        userID int64
+    )
+    r := xlhttp.Build(c)
+    userID, err = r.GetJWTUID()
+    if userID == 0 || err != nil {
+        r.JsonReturn(e.ErrorToken)
+        return
+    }
+    var req model.GetAllBotsReq
+    err = r.RequestParser(&req)
+    if err != nil {
+        return
+    }
+    req.UserID = userID
+    req.ClientIP = c.ClientIP()
+    resp, err := service.GetAllBots(c, req)
+    r.JsonReturn(err, resp)
+    return
+}

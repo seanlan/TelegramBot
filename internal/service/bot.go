@@ -4,10 +4,14 @@
 package service
 
 import (
+	"TelegramBot/internal/constant"
 	"TelegramBot/internal/dao"
 	"TelegramBot/internal/dao/sqlmodel"
+	"TelegramBot/internal/handler"
 	"TelegramBot/internal/model"
 	"context"
+	"go.uber.org/zap"
+	tele "gopkg.in/telebot.v3"
 )
 
 func GetBotList(ctx context.Context, req model.GetBotListReq) (resp model.GetBotListResp, err error) {
@@ -32,5 +36,35 @@ func SaveBot(ctx context.Context, req model.SaveBotReq) (resp model.SaveBotResp,
 		botQ.Token.FieldName:  req.Token,
 		botQ.Enable.FieldName: req.Enable,
 	}, botQ.ID.FieldName)
+	zap.S().Infof("change bot %s enable to %d", bot.Name, bot.Enable)
+	if err == nil {
+		b, _err := tele.NewBot(tele.Settings{
+			Token:   bot.Token,
+			Offline: true,
+		})
+		if _err == nil {
+			err = _err
+			return
+		}
+		if bot.Enable == 1 {
+			hook, _ := handler.GetConfigByKey(ctx, constant.TelegramBotHookKey)
+			_err = b.SetWebhook(&tele.Webhook{
+				Listen:   ":80",
+				Endpoint: &tele.WebhookEndpoint{PublicURL: hook + bot.Name},
+			})
+		} else {
+			_err = b.RemoveWebhook()
+		}
+		if _err != nil {
+			zap.S().Infof("change bot %s Webhook success", bot.Name)
+			err = _err
+			return
+		}
+	}
+	return
+}
+
+func GetAllBots(ctx context.Context, req model.GetAllBotsReq) (resp model.GetAllBotsResp, err error) {
+	err = dao.FetchAllBots(ctx, &resp.Bots, nil, 0, 0)
 	return
 }

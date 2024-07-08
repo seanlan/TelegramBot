@@ -6,6 +6,7 @@ package service
 import (
 	"TelegramBot/internal/dao"
 	"TelegramBot/internal/dao/sqlmodel"
+	"TelegramBot/internal/handler"
 	"TelegramBot/internal/model"
 	"context"
 )
@@ -36,5 +37,8 @@ func SaveAction(ctx context.Context, req model.SaveActionReq) (resp model.SaveAc
 		actionQ.Content.FieldName:   req.Content,
 		actionQ.Extension.FieldName: req.Extension,
 	}, actionQ.ID.FieldName)
+	if err == nil {
+		handler.ClearBotActionsCache(ctx, req.BotName)
+	}
 	return
 }

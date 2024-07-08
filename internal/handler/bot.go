@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"TelegramBot/internal/constant"
 	"TelegramBot/internal/dao"
 	"TelegramBot/internal/dao/sqlmodel"
 	"TelegramBot/internal/model"
@@ -73,11 +74,11 @@ func RegisterBotWebhook(ctx context.Context) {
 			Offline: true,
 		})
 		if b != nil {
-			hook, _ := GetConfigByKey(ctx, TelegramBotHookKey)
+			hook, _ := GetConfigByKey(ctx, constant.TelegramBotHookKey)
 			zap.S().Infof("hook: %s", hook+bot.Name)
 			if hook != "" {
 				_err := b.SetWebhook(&tele.Webhook{
-					Listen:   ":8080",
+					Listen:   ":80",
 					Endpoint: &tele.WebhookEndpoint{PublicURL: hook + bot.Name},
 				})
 				zap.S().Infof("set webhook error: %v", _err)
@@ -107,7 +108,11 @@ func BotProcessUpdate(ctx context.Context, name string, b *tele.Bot, u *tele.Upd
 		if action.Extension != "" {
 			_ = json.Unmarshal([]byte(action.Extension), &ext)
 			for _, e := range ext {
-				rows = append(rows, selector.Row(selector.URL(e.Text, e.Url)))
+				if e.Type == model.MessageTypeUrl {
+					rows = append(rows, selector.Row(selector.URL(e.Text, e.Url)))
+				} else if e.Type == model.MessageTypeWebapp {
+					rows = append(rows, selector.Row(selector.WebApp(e.Text, &tele.WebApp{URL: e.Url})))
+				}
 			}
 			selector.Inline(rows...)
 		}

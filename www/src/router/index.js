@@ -81,6 +81,36 @@ export const constantRoutes = [{ // 固定路由
       affix: true
     }
   }]
+},
+{
+  path: '/action',
+  component: Layout,
+  redirect: '/action',
+  children: [{
+    path: '',
+    component: () => import('@/views/action/index'),
+    name: 'Dashboard',
+    meta: {
+      title: 'Action管理',
+      icon: 'dashboard',
+      affix: true
+    }
+  }]
+},
+{
+  path: '/config',
+  component: Layout,
+  redirect: '/config',
+  children: [{
+    path: '',
+    component: () => import('@/views/config/index'),
+    name: 'Dashboard',
+    meta: {
+      title: '配置管理',
+      icon: 'dashboard',
+      affix: true
+    }
+  }]
 }
 ]
 
@@ -89,21 +119,6 @@ export const constantRoutes = [{ // 固定路由
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-  {
-    path: '/config',
-    component: Layout,
-    redirect: '/config',
-    children: [{
-      path: '',
-      component: () => import('@/views/config/index'),
-      name: 'Dashboard',
-      meta: {
-        title: '配置管理',
-        icon: 'dashboard',
-        affix: true
-      }
-    }]
-  },
   // 404 page must be placed at the end !!!
   {
     path: '*',

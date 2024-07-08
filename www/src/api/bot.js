@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+// getAllBots
+export function getAllBots() {
+  return request({
+    url: `/api/v1/bot/all`,
+    method: 'post'
+  })
+}
+
 // getBotList
 export function getBotList(data) {
   return request({

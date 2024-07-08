@@ -19,10 +19,18 @@ type GetBotListResp struct {
 type SaveBotReq struct {
 	BaseReq
 	ID     int64  `json:"id" form:"id"`
-	Name   string `json:"name" form:"name"`
-	Token  string `json:"token" form:"token"`
+	Name   string `json:"name" form:"name" binding:"required"`
+	Token  string `json:"token" form:"token" binding:"required"`
 	Enable int32  `json:"enable" form:"enable"`
 }
 
 type SaveBotResp struct {
+}
+
+type GetAllBotsReq struct {
+	BaseReq
+}
+
+type GetAllBotsResp struct {
+	Bots []sqlmodel.Bots `json:"bots"`
 }
