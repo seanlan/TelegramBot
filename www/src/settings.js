@@ -1,12 +1,12 @@
 module.exports = {
   title: 'Telegram Bot Manager',
   s3config: {
-    cdn: 'xxxxxxxxx',
-    endpoint: 'xxxxxxxx',
-    access_key: 'xxxxxxxxx',
-    secret_key: 'xxxxxxxxxxx',
+    cdn: 'xxxxx',
+    endpoint: 'xxxxxx',
+    access_key: 'xxxxx',
+    secret_key: 'xxxxxxxx',
     version: 'v4',
-    bucket: 'xxxxxxx'
+    bucket: 'xxxx'
   },
 
   /**

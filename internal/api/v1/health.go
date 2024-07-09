@@ -4,7 +4,6 @@
 package v1
 
 import (
-	"TelegramBot/internal/e"
 	"TelegramBot/internal/model"
 	"TelegramBot/internal/service"
 	"TelegramBot/pkg/xlhttp"
@@ -13,21 +12,14 @@ import (
 
 func CheckHealth(c *gin.Context) {
 	var (
-		err    error
-		userID int64
+		err error
 	)
 	r := xlhttp.Build(c)
-	userID, err = r.GetJWTUID()
-	if userID == 0 || err != nil {
-		r.JsonReturn(e.ErrorToken)
-		return
-	}
 	var req model.CheckHealthReq
 	err = r.RequestParser(&req)
 	if err != nil {
 		return
 	}
-	req.UserID = userID
 	req.ClientIP = c.ClientIP()
 	resp, err := service.CheckHealth(c, req)
 	r.JsonReturn(err, resp)

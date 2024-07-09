@@ -97,16 +97,25 @@ func RegisterBotWebhook(ctx context.Context) {
 func BotProcessUpdate(ctx context.Context, name string, b *tele.Bot, u *tele.Update) {
 	actions, err := GetBotActions(ctx, name)
 	if err != nil || len(actions) == 0 {
+		zap.S().Warnf("get bot actions error: %v", err)
 		return
 	}
 	for _, action := range actions {
+		zap.S().Infof("action: %v", action)
 		var (
 			ext      = make([]model.MessageExt, 0)
 			rows     = make([]tele.Row, 0)
 			selector = &tele.ReplyMarkup{}
+			image    = action.Image
+			content  = action.Content
 		)
 		if action.Extension != "" {
-			_ = json.Unmarshal([]byte(action.Extension), &ext)
+			_err := json.Unmarshal([]byte(action.Extension), &ext)
+			if _err != nil {
+				zap.S().Infof("unmarshal extension error: %v", _err)
+				continue
+			}
+			zap.S().Infof("extension: %v", ext)
 			for _, e := range ext {
 				if e.Type == model.MessageTypeUrl {
 					rows = append(rows, selector.Row(selector.URL(e.Text, e.Url)))
@@ -117,13 +126,13 @@ func BotProcessUpdate(ctx context.Context, name string, b *tele.Bot, u *tele.Upd
 			selector.Inline(rows...)
 		}
 		b.Handle(action.Command, func(c tele.Context) error {
-			if action.Image != "" {
+			if image != "" {
 				return c.Send(&tele.Photo{
-					File:    tele.FromURL(action.Image),
-					Caption: action.Content,
+					File:    tele.FromURL(image),
+					Caption: content,
 				}, selector)
 			} else {
-				return c.Send(action.Content, selector)
+				return c.Send(content, selector)
 			}
 		})
 	}
