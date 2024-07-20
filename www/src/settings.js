@@ -1,12 +1,12 @@
 module.exports = {
   title: 'Telegram Bot Manager',
   s3config: {
-    cdn: 'xxxxx',
-    endpoint: 'xxxxxx',
-    access_key: 'xxxxx',
-    secret_key: 'xxxxxxxx',
+    cdn: 'https://cdn.taadu.com/',
+    endpoint: 'https://0fa13440a3a7294b98ac1ac586e286dc.r2.cloudflarestorage.com',
+    access_key: '0baade1a8d3b5abefc194f263761ec24',
+    secret_key: 'e8ce67f94a123280eb05585d33773365d246b6e0c63c88ca0db017c78a85e871',
     version: 'v4',
-    bucket: 'xxxx'
+    bucket: 'www'
   },
 
   /**
