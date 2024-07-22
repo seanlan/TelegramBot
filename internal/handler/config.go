@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-const ()
-
 // GetConfig
 //
 //	@Description: 获取配置

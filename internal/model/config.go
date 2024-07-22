@@ -28,7 +28,7 @@ type SaveConfigResp struct {
 }
 
 type RefreshConfigReq struct {
-    BaseReq
+	BaseReq
 }
 
 type RefreshConfigResp struct {

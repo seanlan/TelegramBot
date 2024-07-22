@@ -12,11 +12,12 @@ import (
 )
 
 func GetActionList(ctx context.Context, req model.GetActionListReq) (resp model.GetActionListResp, err error) {
+	var actionQ = sqlmodel.ActionColumns
 	resp.Total, err = dao.CountAction(ctx, nil)
 	if err != nil {
 		return
 	}
-	err = dao.FetchAllAction(ctx, &resp.Actions, nil, req.Page, req.Size)
+	err = dao.FetchAllAction(ctx, &resp.Actions, nil, req.Page, req.Size, actionQ.ID.Desc())
 	return
 }
 
@@ -40,5 +41,10 @@ func SaveAction(ctx context.Context, req model.SaveActionReq) (resp model.SaveAc
 	if err == nil {
 		handler.ClearBotActionsCache(ctx, req.BotName)
 	}
+	return
+}
+
+func DeleteAction(ctx context.Context, req model.DeleteActionReq) (resp model.DeleteActionResp, err error) {
+	_, err = dao.DeleteAction(ctx, sqlmodel.ActionColumns.ID.Eq(req.ID))
 	return
 }

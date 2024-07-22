@@ -15,11 +15,12 @@ import (
 )
 
 func GetBotList(ctx context.Context, req model.GetBotListReq) (resp model.GetBotListResp, err error) {
+	var botQ = sqlmodel.BotsColumns
 	resp.Total, err = dao.CountBots(ctx, nil)
 	if err != nil {
 		return
 	}
-	err = dao.FetchAllBots(ctx, &resp.Bots, nil, req.Page, req.Size)
+	err = dao.FetchAllBots(ctx, &resp.Bots, nil, req.Page, req.Size, botQ.ID.Desc())
 	return
 }
 

@@ -45,6 +45,8 @@ func initWebRouter(r *gin.Engine) {
 		actionGroup.POST("list", v1.GetActionList)
 		// 保存action
 		actionGroup.POST("save", v1.SaveAction)
+		// 删除action
+		actionGroup.POST("delete", v1.DeleteAction)
 	}
 	configGroup := apiGroup.Group("config")
 	{
@@ -54,5 +56,21 @@ func initWebRouter(r *gin.Engine) {
 		configGroup.POST("save", v1.SaveConfig)
 		// 刷新config
 		configGroup.POST("refresh", v1.RefreshConfig)
+	}
+	groupGroup := apiGroup.Group("group")
+	{
+		// group列表
+		groupGroup.POST("list", v1.GetGroupList)
+		// 保存group
+		groupGroup.POST("save", v1.SaveGroup)
+		// 删除group
+		groupGroup.POST("delete", v1.DeleteGroup)
+	}
+	messageGroup := apiGroup.Group("message")
+	{
+		// message列表
+		messageGroup.POST("list", v1.GetMessagePushList)
+		// 保存message
+		messageGroup.POST("save", v1.SaveMessagePush)
 	}
 }

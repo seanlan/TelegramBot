@@ -17,3 +17,12 @@ export function saveAction(data) {
     data
   })
 }
+
+// deleteAction
+export function deleteAction(data) {
+  return request({
+    url: `/api/v1/action/delete`,
+    method: 'post',
+    data
+  })
+}

@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetConfigList(c *gin.Context) {
+func GetGroupList(c *gin.Context) {
 	var (
 		err    error
 		userID int64
@@ -22,18 +22,18 @@ func GetConfigList(c *gin.Context) {
 		r.JsonReturn(e.ErrorToken)
 		return
 	}
-	var req model.GetConfigListReq
+	var req model.GetGroupListReq
 	err = r.RequestParser(&req)
 	if err != nil {
 		return
 	}
 	req.UserID = userID
 	req.ClientIP = c.ClientIP()
-	resp, err := service.GetConfigList(c, req)
+	resp, err := service.GetGroupList(c, req)
 	r.JsonReturn(err, resp)
 	return
 }
-func SaveConfig(c *gin.Context) {
+func SaveGroup(c *gin.Context) {
 	var (
 		err    error
 		userID int64
@@ -44,19 +44,18 @@ func SaveConfig(c *gin.Context) {
 		r.JsonReturn(e.ErrorToken)
 		return
 	}
-	var req model.SaveConfigReq
+	var req model.SaveGroupReq
 	err = r.RequestParser(&req)
 	if err != nil {
 		return
 	}
 	req.UserID = userID
 	req.ClientIP = c.ClientIP()
-	resp, err := service.SaveConfig(c, req)
+	resp, err := service.SaveGroup(c, req)
 	r.JsonReturn(err, resp)
 	return
 }
-
-func RefreshConfig(c *gin.Context) {
+func DeleteGroup(c *gin.Context) {
 	var (
 		err    error
 		userID int64
@@ -67,14 +66,14 @@ func RefreshConfig(c *gin.Context) {
 		r.JsonReturn(e.ErrorToken)
 		return
 	}
-	var req model.RefreshConfigReq
+	var req model.DeleteGroupReq
 	err = r.RequestParser(&req)
 	if err != nil {
 		return
 	}
 	req.UserID = userID
 	req.ClientIP = c.ClientIP()
-	resp, err := service.RefreshConfig(c, req)
+	resp, err := service.DeleteGroup(c, req)
 	r.JsonReturn(err, resp)
 	return
 }

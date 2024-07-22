@@ -77,37 +77,7 @@ export const constantRoutes = [{ // 固定路由
     name: 'Dashboard',
     meta: {
       title: '机器人管理',
-      icon: 'dashboard',
-      affix: true
-    }
-  }]
-},
-{
-  path: '/action',
-  component: Layout,
-  redirect: '/action',
-  children: [{
-    path: '',
-    component: () => import('@/views/action/index'),
-    name: 'Dashboard',
-    meta: {
-      title: 'Action管理',
-      icon: 'dashboard',
-      affix: true
-    }
-  }]
-},
-{
-  path: '/config',
-  component: Layout,
-  redirect: '/config',
-  children: [{
-    path: '',
-    component: () => import('@/views/config/index'),
-    name: 'Dashboard',
-    meta: {
-      title: '配置管理',
-      icon: 'dashboard',
+      icon: 'bug',
       affix: true
     }
   }]
@@ -119,6 +89,62 @@ export const constantRoutes = [{ // 固定路由
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  {
+    path: '/action',
+    component: Layout,
+    redirect: '/action',
+    children: [{
+      path: '',
+      component: () => import('@/views/action/index'),
+      name: 'Dashboard',
+      meta: {
+        title: 'Action管理',
+        icon: 'el-icon-help',
+        affix: true
+      }
+    }]
+  },
+  {
+    path: '/group',
+    component: Layout,
+    redirect: '/group/group',
+    name: '群组管理',
+    meta: { title: '群组管理', icon: 'peoples', roles: [] },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'group',
+        name: 'group-list',
+        component: () => import('@/views/group/group'),
+        meta: { title: '群组管理', icon: 'peoples', roles: [] }
+      },
+      {
+        path: 'message',
+        component: () => import('@/views/group/message'),
+        name: 'Dashboard',
+        meta: {
+          title: '消息群发',
+          icon: 'message',
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/config',
+    component: Layout,
+    redirect: '/config',
+    children: [{
+      path: '',
+      component: () => import('@/views/config/index'),
+      name: 'Dashboard',
+      meta: {
+        title: '配置管理',
+        icon: 'el-icon-s-tools',
+        affix: true
+      }
+    }]
+  },
   // 404 page must be placed at the end !!!
   {
     path: '*',

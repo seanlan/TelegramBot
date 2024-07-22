@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetConfigList(c *gin.Context) {
+func GetMessagePushList(c *gin.Context) {
 	var (
 		err    error
 		userID int64
@@ -22,18 +22,18 @@ func GetConfigList(c *gin.Context) {
 		r.JsonReturn(e.ErrorToken)
 		return
 	}
-	var req model.GetConfigListReq
+	var req model.GetMessagePushListReq
 	err = r.RequestParser(&req)
 	if err != nil {
 		return
 	}
 	req.UserID = userID
 	req.ClientIP = c.ClientIP()
-	resp, err := service.GetConfigList(c, req)
+	resp, err := service.GetMessagePushList(c, req)
 	r.JsonReturn(err, resp)
 	return
 }
-func SaveConfig(c *gin.Context) {
+func SaveMessagePush(c *gin.Context) {
 	var (
 		err    error
 		userID int64
@@ -44,37 +44,14 @@ func SaveConfig(c *gin.Context) {
 		r.JsonReturn(e.ErrorToken)
 		return
 	}
-	var req model.SaveConfigReq
+	var req model.SaveMessagePushReq
 	err = r.RequestParser(&req)
 	if err != nil {
 		return
 	}
 	req.UserID = userID
 	req.ClientIP = c.ClientIP()
-	resp, err := service.SaveConfig(c, req)
-	r.JsonReturn(err, resp)
-	return
-}
-
-func RefreshConfig(c *gin.Context) {
-	var (
-		err    error
-		userID int64
-	)
-	r := xlhttp.Build(c)
-	userID, err = r.GetJWTUID()
-	if userID == 0 || err != nil {
-		r.JsonReturn(e.ErrorToken)
-		return
-	}
-	var req model.RefreshConfigReq
-	err = r.RequestParser(&req)
-	if err != nil {
-		return
-	}
-	req.UserID = userID
-	req.ClientIP = c.ClientIP()
-	resp, err := service.RefreshConfig(c, req)
+	resp, err := service.SaveMessagePush(c, req)
 	r.JsonReturn(err, resp)
 	return
 }

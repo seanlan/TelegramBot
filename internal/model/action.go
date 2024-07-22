@@ -28,3 +28,11 @@ type SaveActionReq struct {
 
 type SaveActionResp struct {
 }
+
+type DeleteActionReq struct {
+	BaseReq
+	ID int64 `json:"id" form:"id" binding:"required"`
+}
+
+type DeleteActionResp struct {
+}

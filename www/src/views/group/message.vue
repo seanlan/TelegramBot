@@ -1,35 +1,35 @@
 <template>
   <el-container>
+    <el-header class="pagetab">
+      <h4 class="links">消息推送</h4>
+    </el-header>
     <el-main>
-      <el-header class="pagetab">
-        <h4>Action管理</h4>
-      </el-header>
       <el-row type="flex" justify="end">
-        <el-button type="primary" icon="el-icon-plus" @click="()=>showEditForm({})">添加Action</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="()=>showEditForm({})">添加消息</el-button>
       </el-row>
       <el-table
-        v-loading="actions.loading"
-        :data="actions.list"
+        ref="multipleTable"
+        v-loading="table_loading"
+        :data="list"
+        tooltip-effect="dark"
+        style="width: 100%"
       >
         <el-table-column
           prop="id"
           label="ID"
-          width="100"
         />
         <el-table-column
-          prop="bot_name"
+          prop="bot_id"
           label="Bot Name"
           align="center"
-        />
-        <el-table-column
-          prop="command"
-          label="Command"
-          align="center"
-        />
+        >
+          <template slot-scope="scope">
+            <span>{{ getBotInfo(scope.row.bot_id).name }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="image"
-          label="Image"
-          align="center"
+          label="图片"
         >
           <template slot-scope="scope">
             <div class="tablecell">
@@ -45,67 +45,76 @@
         </el-table-column>
         <el-table-column
           prop="content"
-          label="Content"
-        />
-        <el-table-column
-          prop="extension"
-          label="Extension"
-        />
-        <el-table-column
-          label="操作"
-          align="center"
+          label="内容"
         >
           <template slot-scope="scope">
-            <el-button type="success" size="mini" @click="()=>showEditForm(scope.row)">编辑</el-button>
-            <el-button type="danger" size="mini" @click="()=>doDeleteAction(scope.row)">删除</el-button>
+            <div style="white-space: pre-line;">
+              <span>{{ scope.row.content }}</span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="extension"
+          label="附加选项"
+        />
+        <el-table-column
+          prop="start_at"
+          label="开始时间（北京时间）"
+          width="160"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.start_at | utcTimeFormat }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="state"
+          label="状态"
+          width="100"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.state | messagePushState }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          width="160"
+        >
+          <template slot-scope="scope">
+            <el-button type="success" size="mini" @click="showEditForm(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
-        background
-        layout="prev, pager, next, jumper, ->, total"
-        :page-size="actions.size"
-        :total="actions.totalnum"
-        @current-change="currentPageChange"
-      />
     </el-main>
     <el-dialog
-      :title="!!editForm.id ? '修改Action': '添加Action'"
+      :title="!!editForm.id ? '修改消息推送': '添加消息推送'"
       :visible.sync="editDialogVisible"
       width="50%"
     >
       <el-form ref="editForm" :model="editForm" :rules="editFormRules" label-width="140px">
-        <el-form-item label="Bot" prop="bot_name">
+        <el-form-item label="Bot" prop="bot_id">
           <el-select
-            v-model="editForm.bot_name"
+            v-model="editForm.bot_id"
             placeholder="Select a Bot"
           >
             <el-option
               v-for="item in allBots"
               :key="item.id"
               :label="item.name"
-              :value="item.name"
+              :value="item.id"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="Command" prop="command">
-          <el-input
-            ref="token"
-            v-model="editForm.command"
-            tabindex="2"
-            placeholder="command"
-          />
-        </el-form-item>
-        <el-form-item label="图片(建议640*320)" prop="image">
+        <el-form-item label="图片" prop="image">
           <S3Upload
             class="avatar-uploader"
             accept=".jpg,.png"
             :single="true"
             :config="s3config"
             :file-list="editFormImageFiles"
+            @onSuccess="uploadSuccess"
           />
           <el-input
-            ref="icon_url"
+            ref="image"
             v-model="editForm.image"
             tabindex="1"
             placeholder="请输入图片地址"
@@ -118,12 +127,25 @@
             tabindex="2"
             placeholder="请输入内容"
             type="textarea"
-            :rows="5"
+            :rows="4"
           />
         </el-form-item>
+
+        <!-- <el-form-item label="附加选项" prop="ext">
+          <el-input
+            ref="ext"
+            v-model="editForm.ext"
+            tabindex="2"
+            placeholder="请输入附加选项"
+            type="textarea"
+            :rows="4"
+          />
+        </el-form-item> -->
+
         <el-form-item label="附加选项" prop="ext">
           <el-button type="primary" icon="el-icon-plus" size="small" @click="addExt">添加</el-button>
         </el-form-item>
+
         <el-form-item
           v-for="(ext, index) in editFormExtends"
           :key="index"
@@ -143,7 +165,7 @@
                 @change="changeExt"
               >
                 <el-option
-                  v-for="item in ['url', 'webapp']"
+                  v-for="item in ['url']"
                   :key="item"
                   :label="item"
                   :value="item"
@@ -162,6 +184,15 @@
             </el-col>
           </el-row>
         </el-form-item>
+
+        <el-form-item label="开始时间" prop="start_at">
+          <el-date-picker
+            v-model="editForm.start_at"
+            type="datetime"
+            placeholder="选择日期时间"
+            value-format="timestamp"
+          />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
@@ -175,9 +206,10 @@
 <script>
 import _ from 'lodash'
 import { getAllBots } from '@/api/bot'
-import { getActionList, saveAction, deleteAction } from '@/api/action'
 import S3Upload from '@/components/S3Upload'
+import { getMessagePushList, saveMessagePush } from '@/api/group'
 import { s3config } from '@/settings'
+
 export default {
   components: {
     S3Upload
@@ -186,26 +218,29 @@ export default {
     return {
       s3config,
       allBots: [],
-      actions: {
-        list: [],
-        page: 1,
-        size: 20,
-        totalnum: 0,
-        loading: false
+      table_loading: false,
+      editDialogVisible: false,
+      modaltype: 'add',
+      editForm: {
+        ext: '[]',
+        start: new Date().getTime(),
+        image: '123123',
+        image_files: []
       },
-      editForm: {},
       editFormImageFiles: [],
       editFormExtends: [],
+      list: [],
+      pagesize: 20,
+      totalnum: 0,
+      page: 1,
       editFormRules: {
-        bot_name: [
-          { required: true, message: 'Please select a bot', trigger: 'blur' }
-        ],
-        command: [
-          { required: true, message: 'Please input command', trigger: 'blur' }
-        ]
-      },
-      editDialogVisible: false
+        content: [{ required: true, trigger: 'blur', message: 'VALUE不能为空' }],
+        bot_id: [{ required: true, trigger: 'blur', message: 'bot不能为空' }],
+        start_at: [{ required: true, trigger: 'blur', message: '开始时间不能为空' }]
+      }
     }
+  },
+  computed: {
   },
   watch: {
     editFormImageFiles: {
@@ -224,36 +259,43 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
+    this.loadMessageList()
     this.loadAllBots()
-    this.loadActionList()
   },
   methods: {
-    handleSizeChange(val) {
-      this.size = val
-      this.page = 1
-      this.loadData()
-    },
-    currentPageChange(e) {
-      this.page = e
-      this.loadData()
-    },
-    async loadActionList() {
-      this.actions.loading = true
-      const data = await getActionList({
-        page: this.actions.page,
-        size: this.actions.size
-      })
-      console.log(data)
-      this.actions.loading = false
-      this.actions.list = data.actions
-      this.actions.totalnum = data.total
-    },
     async loadAllBots() {
       const data = await getAllBots()
       console.log('loadAllBots:', data)
       this.allBots = data.bots || []
       console.log('this.allBots:', this.allBots)
+    },
+    async loadMessageList() {
+      this.table_loading = true
+      var params = {
+        page: this.page,
+        size: this.pagesize
+      }
+      const res = await getMessagePushList(params)
+      this.list = res.list || []
+      this.table_loading = false
+    },
+    doEditFormSubmit() {
+      this.$refs.editForm.validate(valid => {
+        if (valid) {
+          console.log('editForm:', this.editForm)
+          saveMessagePush(this.editForm).then(() => {
+            this.$message({
+              message: (this.editForm.id) ? 'Edit success' : 'Add success',
+              type: 'success'
+            })
+            this.editDialogVisible = false
+            this.loadMessageList()
+          }).finally(() => {
+            this.$refs.editForm.resetFields()
+          })
+        }
+      })
     },
     showEditForm(row) {
       this.editForm = _.cloneDeep(row)
@@ -271,43 +313,6 @@ export default {
         this.editFormExtends = []
       }
     },
-    doEditFormSubmit() {
-      this.$refs.editForm.validate(valid => {
-        if (valid) {
-          console.log('editForm:', this.editForm)
-          saveAction(this.editForm).then(() => {
-            this.$message({
-              message: (this.editForm.id) ? 'Edit success' : 'Add success',
-              type: 'success'
-            })
-            this.editDialogVisible = false
-            this.loadActionList()
-          }).finally(() => {
-            this.$refs.editForm.resetFields()
-          })
-        }
-      })
-    },
-    doDeleteAction(row) {
-      this.$confirm('Are you sure to delete this action?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      }).then(() => {
-        deleteAction(row).then(() => {
-          this.$message({
-            type: 'success',
-            message: 'Delete success'
-          })
-          this.loadActionList()
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Delete canceled'
-        })
-      })
-    },
     addExt() {
       const extList = _.cloneDeep(this.editFormExtends) || []
       extList.push({
@@ -319,34 +324,25 @@ export default {
       this.editForm.extension = JSON.stringify(this.editFormExtends)
     },
     removeExt(index) {
-      const extList = _.cloneDeep(this.editFormExtends) || []
+      const extList = _.cloneDeep(this.editForm.extList) || []
       extList.splice(index, 1)
-      this.editFormExtends = extList
-      this.editForm.extension = JSON.stringify(this.editFormExtends)
+      this.editForm.extList = extList
+      this.editForm.ext = JSON.stringify(this.editForm.extList)
     },
     changeExt() {
       this.editForm.extension = JSON.stringify(this.editFormExtends)
+    },
+    uploadSuccess(file) {
+      console.log('file', file)
+      console.log('this.editForm', this.editForm)
+      this.editForm.image = file.url
+    },
+    getBotInfo(bot_id) {
+      return this.allBots.find(item => item.id === bot_id)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.card-panel{
-  text-align: center;
-}
-.card-panel span{
-  font-size: 12px;
-  color: #999;
-}
-.mean {
-  color: rgb(78, 136, 224);
-}
-.span-red {
-  color: red;
-}
-.span-green {
-  color: green;
-}
 </style>
-
