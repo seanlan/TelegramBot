@@ -31,9 +31,6 @@ func cronFunc(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("cron add func error: %#v", err)
 	}
-	if err != nil {
-		log.Fatalf("cron add func error: %#v", err)
-	}
 	// 启动定时任务
 	c.Start()
 	select {}

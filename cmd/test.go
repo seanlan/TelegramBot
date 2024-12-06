@@ -4,10 +4,52 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"context"
+	"fmt"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	awsConf "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/spf13/cobra"
-	"go.uber.org/zap"
-	tele "gopkg.in/telebot.v3"
+	"log"
 )
+
+func testFunc(cmd *cobra.Command, args []string) {
+	var bucketName = "www"
+	var accountId = "0fa13440a3a7294b98ac1ac586e286dc"
+	var accessKeyId = "0baade1a8d3b5abefc194f263761ec24"
+	var accessKeySecret = "e8ce67f94a123280eb05585d33773365d246b6e0c63c88ca0db017c78a85e871"
+
+	r2Resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+		return aws.Endpoint{
+			URL: fmt.Sprintf("https://%s.r2.cloudflarestorage.com", accountId),
+		}, nil
+	})
+
+	cfg, err := awsConf.LoadDefaultConfig(context.TODO(),
+		awsConf.WithEndpointResolverWithOptions(r2Resolver),
+		awsConf.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(accessKeyId, accessKeySecret, "")),
+		awsConf.WithRegion("auto"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	client := s3.NewFromConfig(cfg)
+
+	presignClient := s3.NewPresignClient(client)
+	presignResult, err := presignClient.PresignPutObject(context.TODO(), &s3.PutObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String("example.txt"),
+	})
+
+	if err != nil {
+		panic("Couldn't get presigned URL for PutObject")
+	}
+
+	fmt.Printf("Presigned URL For object: %s\n", presignResult.URL)
+
+}
 
 // testCmd represents the test command
 var testCmd = &cobra.Command{
@@ -19,21 +61,7 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		b, err := tele.NewBot(tele.Settings{
-			Token:   "6935398271:AAF3tkwnlyHeuPRSVWGPVcWH-GXYBfNlyno",
-			Offline: true,
-		})
-		if err != nil {
-			panic(err)
-		}
-		_, err = b.Send(&tele.User{
-			ID: -4253239938,
-		}, "hello world")
-		if err != nil {
-			zap.S().Infof("send message error: %v", err)
-		}
-	},
+	Run: testFunc,
 }
 
 func init() {
